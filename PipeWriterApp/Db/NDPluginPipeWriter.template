@@ -1,0 +1,16 @@
+#=================================================================#
+# Template file: NDPluginPipeWriter.template
+include "NDFile.template"
+include "NDPluginBase.template"
+# Set ASYN_TRACEIO_HEX bit by default
+record(asyn,"$(P)$(R)CommandIn")
+{
+field(PORT, $(CMD_IN_PORT))
+field(TIB2,"1")
+}
+record(asyn,"$(P)$(R)CommandOut")
+{
+field(PORT, $(COMMAND_OUT_PORT))
+field(TIB2,"1")
+}
+
