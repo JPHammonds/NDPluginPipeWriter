@@ -1,1 +1,18 @@
 file "NDPluginFile_settings.req", P=$(P), R=$(R)
+$(P)$(R)XSize
+$(P)$(R)YSize
+$(P)$(R)DataSourceType
+$(P)$(R)NumTestImages
+$(P)$(R)TestImagePeriod
+$(P)$(R)InputQueueSize
+$(P)$(R)OutputQueueSize
+$(P)$(R)InputInfImages
+$(P)$(R)CalcOutputType
+$(P)$(R)OutputFileType
+$(P)$(R)OutputFilePath
+$(P)$(R)OutputFileName
+$(P)$(R)OutputNCapture
+$(P)$(R)OutputIncFileNum
+$(P)$(R)OutputBigStream
+$(P)$(R)OutputCaptureInf
+
