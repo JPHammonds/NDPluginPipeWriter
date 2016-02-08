@@ -2,15 +2,446 @@
 # Template file: NDPluginPipeWriter.template
 include "NDFile.template"
 include "NDPluginBase.template"
-# Set ASYN_TRACEIO_HEX bit by default
-record(asyn,"$(P)$(R)CommandIn")
+
+# File path.
+record(waveform, "$(P)$(R)CommandPipeIn")
 {
-field(PORT, $(CMD_IN_PORT))
-field(TIB2,"1")
+    field(PINI, "YES")
+    field(DTYP, "asynOctetWrite")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_CommandPipeIn")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    info(autosaveFields, "VAL")
 }
-record(asyn,"$(P)$(R)CommandOut")
+
+record(waveform, "$(P)$(R)CommandPipeOut")
 {
-field(PORT, $(COMMAND_OUT_PORT))
-field(TIB2,"1")
+    field(PINI, "YES")
+    field(DTYP, "asynOctetWrite")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_CommandPipeIn")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    info(autosaveFields, "VAL")
+}
+
+record(longout, "$(P)$(R)XSize")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_XSize")
+    field(VAL,  "1")
+    info(autosaveFields, "VAL")
+}
+
+record(longin, "$(P)$(R)XSize_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_XSize")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)$(R)YSize")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_YSize")
+    field(VAL,  "1")
+    info(autosaveFields, "VAL")
+}
+
+record(longin, "$(P)$(R)YSize_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_YSize")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)DataSourceType")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_DataSourceType")
+    field(VAL,  "0")
+    field(ZRST, "Test_Images")
+    field(ZRVL, "0")
+    field(ONST, "Linux_Pipe")
+    field(ONVL, "1")
+    info(autosaveFields, "VAL")
+}
+
+record(mbbi, "$(P)$(R)DataSourceType_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_DataSourceType")
+    field(ZRST, "Test_Images")
+    field(ZRVL, "0")
+    field(ONST, "Linux_Pipe")
+    field(ONVL, "1")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)$(R)NumTestImages")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_NumTestImages")
+    field(VAL,  "1")
+    info(autosaveFields, "VAL")
+}
+
+record(longin, "$(P)$(R)NumTestImages_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_NumTestImages")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)$(R)TestImagePeriod")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_TestImagePeriod")
+    field(VAL,  "1")
+    info(autosaveFields, "VAL")
+}
+
+record(longin, "$(P)$(R)TestImagePeriod_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_TestImagePeriod")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)$(R)InputQueueSize")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_InputQueueSize")
+    field(VAL,  "1")
+    info(autosaveFields, "VAL")
+}
+
+record(longin, "$(P)$(R)InputQueueSize_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_InputQueueSize")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)$(R)OutputQueueSize")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputQueueSize")
+    field(VAL,  "1")
+    info(autosaveFields, "VAL")
+}
+
+record(longin, "$(P)$(R)OutputQueueSize_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputQueueSize")
+    field(SCAN, "I/O Intr")
+}
+
+record(bo, "$(P)$(R)InputInfImages")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_InputInfImages")
+    field(VAL,  "1")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    info(autosaveFields, "VAL")
+}
+
+record(bi, "$(P)$(R)InputInfImages_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_InputInfImages")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    field(SCAN, "I/O Intr")
+}
+
+record(bo, "$(P)$(R)ResetQueues")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_ResetQueues")
+    field(VAL,  "1")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    info(autosaveFields, "VAL")
+}
+
+#(busy, "$(P)$(R)ResetQueues")
+#{
+#    field(DTYP, "asynInt32")
+#    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_InputInfImages")
+#    field(ZNAM, "No")
+#    field(ONAM, "Yes")
+#}
+
+record(bi, "$(P)$(R)ResetQueues_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_InputInfImages")
+    field(ZNAM, "No")
+    field(ZSV,  "NO_ALARM")
+    field(ONAM, "Yes")
+    field(OSV,  "MINOR")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)CalcOutputType")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_CalcOutType")
+    field(VAL,  "0")
+    field(ZRST, "RawImgs")
+    field(ZRVL, "0")
+    field(ONST, "rawImm")
+    field(ONVL, "1")
+    field(TWST, "compImm")
+    field(TWVL, "2")
+    info(autosaveFields, "VAL")
+}
+
+record(mbbi, "$(P)$(R)CalcOutputType_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_CalcOutType")
+    field(ZRST, "RawImgs")
+    field(ZRVL, "0")
+    field(ONST, "rawImm")
+    field(ONVL, "1")
+    field(TWST, "compImm")
+    field(TWVL, "2")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)OutputFileType")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputFileType")
+    field(VAL,  "0")
+    field(ZRST, "No_Output")
+    field(ZRVL, "0")
+    field(ONST, "TIFF")
+    field(ONVL, "1")
+    field(TWST, "IMM")
+    field(TWVL, "2")
+    field(THST, "Linux_Pipe")
+    field(THVL, "3")
+    info(autosaveFields, "VAL")
+}
+
+record(mbbi, "$(P)$(R)OutputFileType_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputFileType")
+    field(ZRST, "No_Output")
+    field(ZRVL, "0")
+    field(ONST, "TIFF")
+    field(ONVL, "1")
+    field(TWST, "IMM")
+    field(TWVL, "2")
+    field(THST, "Linux_Pipe")
+    field(THVL, "3")
+    field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(P)$(R)OutputFilePath")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynOctetWrite")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputFilePath")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    info(autosaveFields, "VAL")
+}
+
+record(waveform, "$(P)$(R)OutputFilePath_RBV")
+{
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputFilePath")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(P)$(R)OutputFileName")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynOctetWrite")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputFileName")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    info(autosaveFields, "VAL")
+}
+
+record(waveform, "$(P)$(R)OutputFileName_RBV")
+{
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputFileName")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)$(R)OutputNCapture")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputNCapture")
+    field(VAL,  "1")
+    info(autosaveFields, "VAL")
+}
+
+record(longin, "$(P)$(R)OutputNCapture_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputNCapture")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin, "$(P)$(R)OutputNCaptured_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputNCaptured")
+    field(SCAN, "I/O Intr")
+}
+
+record(bo, "$(P)$(R)OutputIncFileNum")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputIncFileNum")
+    field(VAL,  "1")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    info(autosaveFields, "VAL")
+}
+
+#record(bi, "$(P)$(R)OutputIncFileNum_RBV")
+#{
+#    field(DTYP, "asynInt32")
+#    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputIncFileNum")
+#    field(ZNAM, "No")
+#    field(ONAM, "Yes")
+#    field(SCAN, "I/O Intr")
+#}
+
+#record(bo, "$(P)$(R)OutputBigStream")
+#{
+#    field(PINI, "YES")
+#    field(DTYP, "asynInt32")
+#    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputBigStream")
+#    field(VAL,  "1")
+#    field(ZNAM, "No")
+#    field(ONAM, "Yes")
+#    info(autosaveFields, "VAL")
+#}
+
+#record(bi, "$(P)$(R)OutputBigStream_RBV")
+#{
+#    field(DTYP, "asynInt32")
+#    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputBigStream")
+#    field(ZNAM, "No")
+#    field(ONAM, "Yes")
+#    field(SCAN, "I/O Intr")
+#}
+
+#record(bo, "$(P)$(R)OutputCaptureInf")
+#{
+#    field(PINI, "YES")
+#    field(DTYP, "asynInt32")
+#    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputCaptureInf")
+#    field(VAL,  "1")
+#    field(ZNAM, "No")
+#    field(ONAM, "Yes")
+#    info(autosaveFields, "VAL")
+#}
+
+#record(bi, "$(P)$(R)OutputCaptureInf_RBV")
+#{
+#    field(DTYP, "asynInt32")
+#    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputCaptureInf")
+#    field(ZNAM, "No")
+#    field(ONAM, "Yes")
+#    field(SCAN, "I/O Intr")
+#}
+
+#record(bo, "$(P)$(R)OutputCaptureStart")
+#{
+#    field(PINI, "YES")
+#    field(DTYP, "asynInt32")
+#    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputCaptureStart")
+#    field(VAL,  "1")
+#    field(ZNAM, "No")
+#    field(ONAM, "Yes")
+#    info(autosaveFields, "VAL")
+#}
+
+#record(bo, "$(P)$(R)OutputCaptureStop")
+#{
+#    field(PINI, "YES")
+#    field(DTYP, "asynInt32")
+#    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputCaptureStop")
+#    field(VAL,  "1")
+#    field(ZNAM, "No")
+#    field(ONAM, "Yes")
+#    info(autosaveFields, "VAL")
+#}
+
+#record(bi, "$(P)$(R)OutputCaptureStatus")
+#{
+#    field(DTYP, "asynInt32")
+#    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputCaptureStatus")
+#    field(ZNAM, "No")
+#    field(ONAM, "Yes")
+#    field(SCAN, "I/O Intr")
+#}
+
+record(bo, "$(P)$(R)ProcessStart")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_ProcessStart")
+    field(VAL,  "1")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    info(autosaveFields, "VAL")
+}
+
+record(bo, "$(P)$(R)ProcessStop")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_ProcessStop")
+    field(VAL,  "1")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    info(autosaveFields, "VAL")
+}
+
+record(bi, "$(P)$(R)ProcessStatus")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_ProcessStatus")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    field(SCAN, "I/O Intr")
+}
+
+record(stringout, "$(P)$(R)TempSuffix")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynOctetWrite")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FILE_TEMP_SUFFIX")
+    field(VAL,  "")
 }
 
