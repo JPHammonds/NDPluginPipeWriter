@@ -1,9 +1,11 @@
 
 #include <cstdio>
-#include <string>
+//#include <string>
+#include <cstring>
 #include <sstream>
 #include <vector>
 #include <sys/stat.h>
+#include <cstdlib>
 
 #include <epicsMutex.h>
 #include <iocsh.h>
@@ -22,6 +24,22 @@ using std::vector;
 /* define C99 standard __func__ to come from MS's __FUNCTION__ */
 #if defined ( _MSC_VER )
 #define __FUNCTION__ __func__
+#endif
+
+#if defined(_WIN32)              // Windows
+  #include <direct.h>
+  #define strtok_r(a,b,c) strtok(a,b)
+  #define MKDIR(a,b) _mkdir(a)
+  #define delim "\\"
+#elif defined(vxWorks)           // VxWorks
+  #include <sys/stat.h>
+  #define MKDIR(a,b) mkdir(a)
+  #define delim "/"
+#else                            // Linux
+  #include <sys/stat.h>
+  #include <sys/types.h>
+  #define delim "/"
+  #define MKDIR(a,b) mkdir(a,b)
 #endif
 
 extern "C" {
@@ -80,11 +98,58 @@ string NDPluginPipeWriter::num2CaptureChangedCmd = "on_lineEdit_NumFiles2Capture
 string NDPluginPipeWriter::outFilePathChangedCmd = "on_lineEdit_tiffpath_textChanged";
 string NDPluginPipeWriter::outFileBaseNameChangedCmd = "on_lineEdit_tiffbasename_textChanged";
 string NDPluginPipeWriter::outIncFileNumCmd = "on_checkBox_IncFileNum_clicked";
+string NDPluginPipeWriter::outNextNumberCmd = "on_linEdit_tiffnumber_textChanged";
 string NDPluginPipeWriter::emptyStr = "";
 
 enum outputType {RAW_IMG, RAW_IMM, COMP_IMM};
 enum outputFileType {NULL_OUTPUT, TIFF_FILE, IMM_FILE, LINUX_PIPE_OUT};
 enum dataSourceType{TEST_IMAGE, LINUX_PIPE_SOURCE};
+
+/** Checks whether the directory specified NDFilePath parameter exists.
+  *
+  * This is a convenience function that determinesthe directory specified NDFilePath parameter exists.
+  * It sets the value of NDFilePathExists to 0 (does not exist) or 1 (exists).
+  * It also adds a trailing '/' character to the path if one is not present.
+  * Returns a error status if the directory does not exist.
+  */
+asynStatus NDPluginPipeWriter::checkOutputPath()
+{
+    /* Formats a complete file name from the components defined in NDStdDriverParams */
+    asynStatus status = asynError;
+    char filePath[MAX_FILENAME_LEN];
+    int hasTerminator=0;
+    struct stat buff;
+    int istat;
+    size_t len;
+    int isDir=0;
+    int pathExists=0;
+
+    getStringParam(PipeWriter_OutputFilePath, sizeof(filePath), filePath);
+    len = strlen(filePath);
+    if (len == 0) return(asynSuccess);
+    /* If the path contains a trailing '/' or '\' remove it, because Windows won't find
+     * the directory if it has that trailing character */
+    if (strncmp(&filePath[len-1], delim, 1) == 0) {
+        filePath[len-1] = 0;
+        len--;
+        hasTerminator=1;
+    }
+    istat = stat(filePath, &buff);
+    if (!istat) isDir = (S_IFDIR & buff.st_mode);
+    if (!istat && isDir) {
+        pathExists = 1;
+        status = asynSuccess;
+    }
+    /* If the path did not have a trailing terminator then add it if there is room */
+    if (!hasTerminator) {
+        if (len < MAX_FILENAME_LEN-2) strcat(filePath, delim);
+        setStringParam(PipeWriter_OutputFilePath, filePath);
+    }
+    setIntegerParam(PipeWriter_OutputFilePathExists, pathExists);
+    return status;
+}
+
+
 
 asynStatus NDPluginPipeWriter::openFile(const char *fileName, NDFileOpenMode_t openMode, NDArray *pArray)
 {
@@ -176,7 +241,7 @@ asynStatus NDPluginPipeWriter::closeFile()
     int fstat;
     if (isPipeOpen) {
         fstat = fclose(inFile);
-        sendCommand(mpiProgName, windowStr, nullOutputSelectedCmd, 0, emptyStr, emptyStr);
+        //sendCommand(mpiProgName, windowStr, nullOutputSelectedCmd, 0, emptyStr, emptyStr);
         status = asynSuccess;
         if (fstat == EOF) {
             asynPrint( pasynUserSelf, ASYN_TRACE_ERROR,
@@ -297,30 +362,110 @@ void NDPluginPipeWriter::sendCommand(const string progName, const string slotNam
 
 void NDPluginPipeWriter::watchMPICommandOutputTask() {
     char outChars[256];
-    vector<string> args;
+    char *argToken;
     string token;
-    string thisApp = string("IOC");
-    string setParamStr = string("setParameter");
+    string thisApp("IOC");
+    string setParamStr("setParameter");
 
     while (1 && keepGoing) {
-        fgets(outChars, 256, cmdInPipe);
-        std::istringstream iss(outChars);
+        vector<string> args;
+        epicsThreadSleep(0.005);
 
-        while (getline(iss, token, ' ')){
-            args.push_back(token);
+        fgets(outChars, 255, cmdInPipe);
+        argToken = strtok(outChars, " ");
+        while (argToken != NULL) {
+            args.push_back(argToken);
+            argToken = strtok(NULL, " ");
         }
         if ( args.size() >= 4){
-            string app=args[0];
-            string functionName = args[1];
-            string paramName = args[2];
-            int argCount = atoi(args[3].c_str());
-
-            if (app==thisApp && paramName==setParamStr) {
+            string app=args.at(0);
+            string functionName = args.at(1);
+            string paramName = args.at(2);
+            int argCount = std::atoi(args.at(3).c_str());
+            if ((app.compare(thisApp) == 0) && (functionName.compare(setParamStr) == 0 )) {
                 if (argCount==0) {
 
                 }
                 else if (argCount == 1) {
+                    string argtype = args.at(4);
+                    string argval = args.at(5);
 
+                    if (argtype == "int"){
+                        int status = asynError;
+                        int paramRef;
+                        int iVal = std::atoi(argval.c_str());
+                        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                                "%s%s. Writing int parameter %s value %d\n",
+                                pluginName, __FUNCTION__,
+                                paramName.c_str(), iVal);
+                        status = findParam(paramName.c_str(), &paramRef);
+                        if (status == asynSuccess) {
+                            int tempVal;
+                            getIntegerParam(paramRef, &tempVal);
+                            if (tempVal != iVal) {
+                                status = setIntegerParam(paramRef, iVal);
+                            }
+                        }
+                        else {
+                            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                                    "%s%s. Trouble finding int parameter %s\n",
+                                    pluginName, __FUNCTION__,
+                                    paramName.c_str());
+                        }
+                    }
+                    else if (argtype == "double"){
+                        int status = asynError;
+                        int paramRef;
+                        double dVal = std::atof(argval.c_str());
+                        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                                "%s, %s, Writing floatt parameter %s value %f\n",
+                                pluginName, __FUNCTION__,
+                                paramName.c_str(), dVal);
+                        status = findParam(paramName.c_str(), &paramRef);
+                        if (status == asynSuccess) {
+                            double tempVal;
+                            getDoubleParam(paramRef, &tempVal);
+                            if (tempVal != dVal) {
+                                status = setDoubleParam(paramRef, dVal);
+                            }
+                        }
+                        else {
+                            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                                    "%s%s. Trouble finding double parameter %s\n",
+                                    pluginName, __FUNCTION__,
+                                    paramName.c_str());
+                        }
+                    }
+                    else if (argtype == "QString"){
+                        int status = asynError;
+                        int paramRef;
+                        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                                "%s%s Writing string parameter %s value %s\n",
+                                pluginName, __FUNCTION__,
+                                paramName.c_str(), argval.c_str());
+
+                        status = findParam(paramName.c_str(), &paramRef);
+                        if (status == asynSuccess) {
+                            char tempVal[256];
+                            getStringParam(paramRef, 256, tempVal);
+                            if (strcmp(tempVal, argval.c_str()) != 0){
+                                status = setStringParam(paramRef, (argval.c_str()));
+                            }
+                        }
+                        else {
+                            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                                    "%s%s. Trouble finding string parameter %s\n",
+                                    pluginName, __FUNCTION__,
+                                    paramName.c_str());
+                        }
+                    }
+                    else {
+                        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                                "%s:%s  Find string parameter %s value %s\n",
+                                pluginName, __FUNCTION__,
+                                paramName.c_str(), argval.c_str());
+
+                    }
                 }
                 else {
                     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -328,16 +473,13 @@ void NDPluginPipeWriter::watchMPICommandOutputTask() {
                             pluginName, __FUNCTION__,
                             outChars);
                 }
+                callParamCallbacks();
             }
         }
-
-        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                "%s:%s cmdOut %s\n",
-                pluginName, __FUNCTION__,
-                outChars);
-        fflush(stdout);
-
-
+//        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+//                "%s:%s cmdOut %s\n",
+//                pluginName, __FUNCTION__,
+//                outChars);
     }
 }
 
@@ -435,6 +577,9 @@ asynStatus NDPluginPipeWriter::writeInt32(asynUser *pasynUser, epicsInt32 value)
     if (function == PipeWriter_OutputNCapture) {
         //Handled by asynNDArrayDriver's NUM_CAPTURE above
     }
+    if (function == PipeWriter_OutputNextNumber) {
+        sendCommand(mpiProgName, windowStr, outNextNumberCmd, 1, qstringStr, sval.str());
+    }
     if (function == PipeWriter_OutputIncFileNum) {
         sendCommand(mpiProgName, windowStr, outIncFileNumCmd, 1, boolStr, sval.str());
     }
@@ -458,7 +603,16 @@ asynStatus NDPluginPipeWriter::writeOctet(asynUser *pasynUser, const char *value
     int status = asynSuccess;
     int function = pasynUser->reason;
 
-    setStringParam(function, value);
+    char previousValue[256];
+
+    getStringParam(function, 256, previousValue);
+    if (strcmp(previousValue, value) != 0){
+        setStringParam(function, value);
+        strcpy(previousValue, value);
+    }
+    else {
+        return asynSuccess;
+    }
 
     if (function == PipeWriter_CommandPipeIn) {
 
@@ -467,6 +621,14 @@ asynStatus NDPluginPipeWriter::writeOctet(asynUser *pasynUser, const char *value
 
     }
     else if (function == PipeWriter_OutputFilePath) {
+        status = checkOutputPath();
+        if (status == asynError) {
+            // If the directory does not exist then try to create it
+            int pathDepth;
+            getIntegerParam(NDFileCreateDir, &pathDepth);
+            status = createFilePath(value, pathDepth);
+            status = this->checkOutputPath();
+        }
         sendCommand(mpiProgName, windowStr, outFilePathChangedCmd, 1, qstringStr, value);
     }
     else if (function == PipeWriter_OutputFileName) {
@@ -505,6 +667,8 @@ NDPluginPipeWriter::NDPluginPipeWriter(const char *portName, int queueSize,
             asynParamInt32, &PipeWriter_YSize);
     createParam(PipeWriter_DataSourceTypeString,
             asynParamInt32, &PipeWriter_DataSourceType);
+    createParam(PipeWriter_InputDataSourceString,
+            asynParamOctet, &PipeWriter_InputDataSource);
     createParam(PipeWriter_NumTestImagesString,
             asynParamInt32, &PipeWriter_NumTestImages);
     createParam(PipeWriter_TestImagePeriodString,
@@ -515,6 +679,10 @@ NDPluginPipeWriter::NDPluginPipeWriter(const char *portName, int queueSize,
             asynParamInt32, &PipeWriter_InputQueueSize);
     createParam(PipeWriter_OutputQueueSizeString,
             asynParamInt32, &PipeWriter_OutputQueueSize);
+    createParam(PipeWriter_InputQueueNumImagesString,
+            asynParamInt32, &PipeWriter_InputQueueNumImages);
+    createParam(PipeWriter_OutputQueueNumImagesString,
+            asynParamInt32, &PipeWriter_OutputQueueNumImages);
     createParam(PipeWriter_ResetQueuesString,
             asynParamInt32, &PipeWriter_ResetQueues);
     createParam(PipeWriter_CalcOutTypeString,
@@ -523,6 +691,8 @@ NDPluginPipeWriter::NDPluginPipeWriter(const char *portName, int queueSize,
             asynParamInt32, &PipeWriter_OutputFileType);
     createParam(PipeWriter_OutputFilePathString,
             asynParamOctet, &PipeWriter_OutputFilePath);
+    createParam(PipeWriter_OutputFilePathExistsString,
+            asynParamInt32, &PipeWriter_OutputFilePathExists);
     createParam(PipeWriter_OutputFileNameString,
             asynParamOctet, &PipeWriter_OutputFileName);
     createParam(PipeWriter_OutputNCaptureString,
@@ -531,6 +701,8 @@ NDPluginPipeWriter::NDPluginPipeWriter(const char *portName, int queueSize,
             asynParamInt32, &PipeWriter_OutputNCaptured);
     createParam(PipeWriter_OutputIncFileNumString,
             asynParamInt32, &PipeWriter_OutputIncFileNum);
+    createParam(PipeWriter_OutputNextNumberString,
+            asynParamInt32, &PipeWriter_OutputNextNumber);
     createParam(PipeWriter_OutputBigStreamString,
             asynParamInt32, &PipeWriter_OutputBigStream);
     createParam(PipeWriter_OutputCaptureInfString,
@@ -541,6 +713,8 @@ NDPluginPipeWriter::NDPluginPipeWriter(const char *portName, int queueSize,
             asynParamInt32, &PipeWriter_OutputCaptureStop);
     createParam(PipeWriter_OutputCaptureStatusString,
             asynParamInt32, &PipeWriter_OutputCaptureStatus);
+    createParam(PipeWriter_RunStateString,
+            asynParamInt32, &PipeWriter_RunState);
     createParam(PipeWriter_ProcessStartString,
             asynParamInt32, &PipeWriter_ProcessStart);
     createParam(PipeWriter_ProcessStopString,
