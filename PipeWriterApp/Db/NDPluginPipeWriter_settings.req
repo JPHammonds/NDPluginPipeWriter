@@ -13,6 +13,4 @@ $(P)$(R)OutputFilePath
 $(P)$(R)OutputFileName
 $(P)$(R)OutputNCapture
 $(P)$(R)OutputIncFileNum
-$(P)$(R)OutputBigStream
-$(P)$(R)OutputCaptureInf
 
