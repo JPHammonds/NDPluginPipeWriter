@@ -112,6 +112,22 @@ record(longin, "$(P)$(R)TestImagePeriod_RBV")
     field(SCAN, "I/O Intr")
 }
 
+record(longout, "$(P)$(R)OutputNextNumber")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputNextNumber")
+    field(VAL,  "1")
+    info(autosaveFields, "VAL")
+}
+
+record(longin, "$(P)$(R)OutputNextNumber_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputNextNumber")
+    field(SCAN, "I/O Intr")
+}
+
 record(longout, "$(P)$(R)InputQueueSize")
 {
     field(PINI, "YES")
@@ -121,10 +137,10 @@ record(longout, "$(P)$(R)InputQueueSize")
     info(autosaveFields, "VAL")
 }
 
-record(longin, "$(P)$(R)InputQueueSize_RBV")
+record(longin, "$(P)$(R)InputQueueNumImages")
 {
     field(DTYP, "asynInt32")
-    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_InputQueueSize")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_InputQueueNumImgs")
     field(SCAN, "I/O Intr")
 }
 
@@ -137,10 +153,10 @@ record(longout, "$(P)$(R)OutputQueueSize")
     info(autosaveFields, "VAL")
 }
 
-record(longin, "$(P)$(R)OutputQueueSize_RBV")
+record(longin, "$(P)$(R)OutputQueueNumImages")
 {
     field(DTYP, "asynInt32")
-    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputQueueSize")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputQueueNumImgs")
     field(SCAN, "I/O Intr")
 }
 
@@ -273,6 +289,15 @@ record(waveform, "$(P)$(R)OutputFilePath_RBV")
     field(SCAN, "I/O Intr")
 }
 
+record(bi, "$(P)$(R)OutputFilePathExists")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputFilePathExists")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    field(SCAN, "I/O Intr")
+}
+
 record(waveform, "$(P)$(R)OutputFileName")
 {
     field(PINI, "YES")
@@ -308,7 +333,7 @@ record(longin, "$(P)$(R)OutputNCapture_RBV")
     field(SCAN, "I/O Intr")
 }
 
-record(longin, "$(P)$(R)OutputNCaptured_RBV")
+record(longin, "$(P)$(R)OutputNCaptured")
 {
     field(DTYP, "asynInt32")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputNCaptured")
@@ -335,76 +360,14 @@ record(bo, "$(P)$(R)OutputIncFileNum")
 #    field(SCAN, "I/O Intr")
 #}
 
-#record(bo, "$(P)$(R)OutputBigStream")
-#{
-#    field(PINI, "YES")
-#    field(DTYP, "asynInt32")
-#    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputBigStream")
-#    field(VAL,  "1")
-#    field(ZNAM, "No")
-#    field(ONAM, "Yes")
-#    info(autosaveFields, "VAL")
-#}
-
-#record(bi, "$(P)$(R)OutputBigStream_RBV")
-#{
-#    field(DTYP, "asynInt32")
-#    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputBigStream")
-#    field(ZNAM, "No")
-#    field(ONAM, "Yes")
-#    field(SCAN, "I/O Intr")
-#}
-
-#record(bo, "$(P)$(R)OutputCaptureInf")
-#{
-#    field(PINI, "YES")
-#    field(DTYP, "asynInt32")
-#    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputCaptureInf")
-#    field(VAL,  "1")
-#    field(ZNAM, "No")
-#    field(ONAM, "Yes")
-#    info(autosaveFields, "VAL")
-#}
-
-#record(bi, "$(P)$(R)OutputCaptureInf_RBV")
-#{
-#    field(DTYP, "asynInt32")
-#    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputCaptureInf")
-#    field(ZNAM, "No")
-#    field(ONAM, "Yes")
-#    field(SCAN, "I/O Intr")
-#}
-
-#record(bo, "$(P)$(R)OutputCaptureStart")
-#{
-#    field(PINI, "YES")
-#    field(DTYP, "asynInt32")
-#    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputCaptureStart")
-#    field(VAL,  "1")
-#    field(ZNAM, "No")
-#    field(ONAM, "Yes")
-#    info(autosaveFields, "VAL")
-#}
-
-#record(bo, "$(P)$(R)OutputCaptureStop")
-#{
-#    field(PINI, "YES")
-#    field(DTYP, "asynInt32")
-#    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputCaptureStop")
-#    field(VAL,  "1")
-#    field(ZNAM, "No")
-#    field(ONAM, "Yes")
-#    info(autosaveFields, "VAL")
-#}
-
-#record(bi, "$(P)$(R)OutputCaptureStatus")
-#{
-#    field(DTYP, "asynInt32")
-#    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputCaptureStatus")
-#    field(ZNAM, "No")
-#    field(ONAM, "Yes")
-#    field(SCAN, "I/O Intr")
-#}
+record(bi, "$(P)$(R)RunState")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_RunState")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    field(SCAN, "I/O Intr")
+}
 
 record(bo, "$(P)$(R)ProcessStart")
 {
