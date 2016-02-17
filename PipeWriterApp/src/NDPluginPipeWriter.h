@@ -83,10 +83,12 @@ protected:
     int PipeWriter_OutputFilePath;
     int PipeWriter_OutputFilePathExists;
     int PipeWriter_OutputFileName;
+    int PipeWriter_OutputFullFileName;
     int PipeWriter_OutputNCapture;
     int PipeWriter_OutputNCaptured;
     int PipeWriter_OutputIncFileNum;
     int PipeWriter_OutputNextNumber;
+    int PipeWriter_OutputNextNumberRBV;
     int PipeWriter_OutputBigStream;
     int PipeWriter_OutputCaptureInf;
     int PipeWriter_OutputCaptureStart;
@@ -139,10 +141,12 @@ private:
 #define PipeWriter_OutputFilePathString          "PW_OutputFilePath"
 #define PipeWriter_OutputFilePathExistsString    "PW_OutputFilePathExists"
 #define PipeWriter_OutputFileNameString          "PW_OutputFileName"
+#define PipeWriter_OutputFullFileNameString      "PW_OutputFullFileName"
 #define PipeWriter_OutputNCaptureString          "PW_OutputNCapture"
 #define PipeWriter_OutputNCapturedString         "PW_OutputNCaptured"
 #define PipeWriter_OutputIncFileNumString        "PW_OutputIncFileNum"
 #define PipeWriter_OutputNextNumberString        "PW_OutputNextNumber"
+#define PipeWriter_OutputNextNumberRBVString     "PW_OutputNextNumberRBV"
 #define PipeWriter_OutputBigStreamString         "PW_OutputBigStream"
 #define PipeWriter_OutputCaptureInfString        "PW_OutputCaptureInf"
 #define PipeWriter_OutputCaptureStartString      "PW_CaptureStart"

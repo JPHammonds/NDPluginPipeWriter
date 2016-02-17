@@ -447,10 +447,22 @@ void NDPluginPipeWriter::watchMPICommandOutputTask() {
                         status = findParam(paramName.c_str(), &paramRef);
                         if (status == asynSuccess) {
                             char tempVal[256];
-                            getStringParam(paramRef, 256, tempVal);
-                            if (strcmp(tempVal, argval.c_str()) != 0){
-                                status = setStringParam(paramRef, (argval.c_str()));
+                            strcpy(tempVal, argval.c_str());
+                            asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                                    "%s%s Found parameter %s \n", pluginName,
+                                    __FUNCTION__, paramName.c_str());
+                            status = setStringParam(paramRef, tempVal);
+                            callParamCallbacks();
+                            if (status != asynSuccess) {
+                                asynPrint(
+                                        pasynUserSelf,
+                                        ASYN_TRACE_ERROR,
+                                        "%s%s. Trouble setting string parameter %s\n",
+                                        pluginName, __FUNCTION__,
+                                        paramName.c_str());
+
                             }
+//                            }
                         }
                         else {
                             asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -458,6 +470,7 @@ void NDPluginPipeWriter::watchMPICommandOutputTask() {
                                     pluginName, __FUNCTION__,
                                     paramName.c_str());
                         }
+                        callParamCallbacks();
                     }
                     else {
                         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -634,10 +647,13 @@ asynStatus NDPluginPipeWriter::writeOctet(asynUser *pasynUser, const char *value
     else if (function == PipeWriter_OutputFileName) {
         sendCommand(mpiProgName, windowStr, outFileBaseNameChangedCmd, 1, qstringStr, value);
     }
+//    else if (function == PipeWriter_OutputFullFileName) {
+//        //do nothing
+//    }
     else if (function < PipeWriter_FIRST_PARAM) {
         status = NDPluginFile::writeOctet(pasynUser, value, nChars, nActual);
     }
-
+    callParamCallbacks();
 
     return (asynStatus)status;
 
@@ -695,6 +711,8 @@ NDPluginPipeWriter::NDPluginPipeWriter(const char *portName, int queueSize,
             asynParamInt32, &PipeWriter_OutputFilePathExists);
     createParam(PipeWriter_OutputFileNameString,
             asynParamOctet, &PipeWriter_OutputFileName);
+    createParam(PipeWriter_OutputFullFileNameString,
+            asynParamOctet, &PipeWriter_OutputFullFileName);
     createParam(PipeWriter_OutputNCaptureString,
             asynParamInt32, &PipeWriter_OutputNCapture);
     createParam(PipeWriter_OutputNCapturedString,
@@ -703,6 +721,8 @@ NDPluginPipeWriter::NDPluginPipeWriter(const char *portName, int queueSize,
             asynParamInt32, &PipeWriter_OutputIncFileNum);
     createParam(PipeWriter_OutputNextNumberString,
             asynParamInt32, &PipeWriter_OutputNextNumber);
+    createParam(PipeWriter_OutputNextNumberRBVString,
+            asynParamInt32, &PipeWriter_OutputNextNumberRBV);
     createParam(PipeWriter_OutputBigStreamString,
             asynParamInt32, &PipeWriter_OutputBigStream);
     createParam(PipeWriter_OutputCaptureInfString,
@@ -727,6 +747,10 @@ NDPluginPipeWriter::NDPluginPipeWriter(const char *portName, int queueSize,
     setStringParam(NDPluginDriverPluginType, "NDPluginPipeWriter");
     setStringParam(PipeWriter_CommandPipeIn, cmdPipeInName);
     setStringParam(PipeWriter_CommandPipeOut, cmdPipeOutName);
+    setStringParam(PipeWriter_OutputFilePath, "");
+    setStringParam(PipeWriter_OutputFileName, "");
+    setStringParam(PipeWriter_OutputFullFileName, "");
+
     lastFrameNumber = -1;
     this->supportsMultipleArrays = 1;
     isPipeOpen = false;
