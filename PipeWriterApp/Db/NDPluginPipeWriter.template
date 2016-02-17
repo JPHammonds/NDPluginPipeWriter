@@ -124,7 +124,7 @@ record(longout, "$(P)$(R)OutputNextNumber")
 record(longin, "$(P)$(R)OutputNextNumber_RBV")
 {
     field(DTYP, "asynInt32")
-    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputNextNumber")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputNextNumberRBV")
     field(SCAN, "I/O Intr")
 }
 
@@ -317,6 +317,16 @@ record(waveform, "$(P)$(R)OutputFileName_RBV")
     field(SCAN, "I/O Intr")
 }
 
+record(waveform, "$(P)$(R)OutputFullFileName")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputFullFileName")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    field(SCAN, "I/O Intr")
+}
+
 record(longout, "$(P)$(R)OutputNCapture")
 {
     field(PINI, "YES")
@@ -350,15 +360,6 @@ record(bo, "$(P)$(R)OutputIncFileNum")
     field(ONAM, "Yes")
     info(autosaveFields, "VAL")
 }
-
-#record(bi, "$(P)$(R)OutputIncFileNum_RBV")
-#{
-#    field(DTYP, "asynInt32")
-#    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_OutputIncFileNum")
-#    field(ZNAM, "No")
-#    field(ONAM, "Yes")
-#    field(SCAN, "I/O Intr")
-#}
 
 record(bi, "$(P)$(R)RunState")
 {
