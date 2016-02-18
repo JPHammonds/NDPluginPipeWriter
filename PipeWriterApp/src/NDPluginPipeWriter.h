@@ -79,6 +79,7 @@ protected:
     int PipeWriter_OutputQueueNumImages;
     int PipeWriter_ResetQueues;
     int PipeWriter_CalcOutType;
+    int PipeWriter_CalcImageNumPix;
     int PipeWriter_OutputFileType;
     int PipeWriter_OutputFilePath;
     int PipeWriter_OutputFilePathExists;
@@ -137,6 +138,7 @@ private:
 #define PipeWriter_InputDataSourceString         "PW_InputDataSource"
 #define PipeWriter_ResetQueuesString             "PW_ResetQueues"
 #define PipeWriter_CalcOutTypeString             "PW_CalcOutType"
+#define PipeWriter_CalcImageNumPixString         "PW_CalcImageNumPix"
 #define PipeWriter_OutputFileTypeString          "PW_OutputFileType"
 #define PipeWriter_OutputFilePathString          "PW_OutputFilePath"
 #define PipeWriter_OutputFilePathExistsString    "PW_OutputFilePathExists"
@@ -154,8 +156,7 @@ private:
 #define PipeWriter_OutputCaptureStatusString     "PW_CaptureStatus"
 #define PipeWriter_ProcessStartString            "PW_ProcessStart"
 #define PipeWriter_ProcessStopString             "PW_ProcessStop"
-#define PipeWriter_ProcessStatusString           "PW_ProcessStatus"
-#define PipeWriter_RunStateString                "PW_RunState"
+#define PipeWriter_ProcessStatusString           "PW_RunState"
 
 
 #define NUM_PIPE_WRITER_PARAMS ((int)(&PipeWriter_LAST_PARAM - &PipeWriter_FIRST_PARAM+1))
