@@ -1,0 +1,494 @@
+
+file {
+	name="/local/epics/synApps_5_8/support/areaDetector-R2-0/NDPluginPipeWriter/PipeWriterApp/op/adl/NDPluginPipewriterFileBase.adl"
+	version=030107
+}
+display {
+	object {
+		x=1
+		y=67
+		width=675
+		height=440
+	}
+	clr=14
+	bclr=4
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+"text entry" {
+	object {
+		x=166
+		y=81
+		width=500
+		height=20
+	}
+	control {
+		chan="$(P)$(R)OutputFileName"
+		clr=14
+		bclr=51
+	}
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=166
+		y=33
+		width=500
+		height=20
+	}
+	control {
+		chan="$(P)$(R)OutputFilePath"
+		clr=14
+		bclr=51
+	}
+	format="string"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=166
+		y=10
+		width=385
+		height=18
+	}
+	monitor {
+		chan="$(P)$(R)OutputFilePath_RBV"
+		clr=29
+		bclr=4
+	}
+	format="string"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=166
+		y=58
+		width=385
+		height=18
+	}
+	monitor {
+		chan="$(P)$(R)OutputFilePath_RBV"
+		clr=29
+		bclr=4
+	}
+	format="string"
+	limits {
+	}
+}
+menu {
+	object {
+		x=166
+		y=108
+		width=85
+		height=20
+	}
+	control {
+		chan="$(P)$(R)OutputIncFileNum"
+		clr=14
+		bclr=4
+	}
+}
+"text update" {
+	object {
+		x=166
+		y=141
+		width=500
+		height=18
+	}
+	monitor {
+		chan="$(P)$(R)OutputFilePath_RBV"
+		clr=29
+		bclr=4
+	}
+	format="string"
+	limits {
+	}
+}
+composite {
+	object {
+		x=555
+		y=10
+		width=115
+		height=20
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=555
+				y=10
+				width=70
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Exists:"
+		}
+		"text update" {
+			object {
+				x=630
+				y=10
+				width=40
+				height=20
+			}
+			monitor {
+				chan="$(P)$(R)OutputFilePathExists_RBV"
+				clr=14
+				bclr=2
+			}
+			clrmod="alarm"
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=16
+		y=176
+		width=654
+		height=116
+	}
+	"composite name"=""
+	children {
+		composite {
+			object {
+				x=329
+				y=223
+				width=339
+				height=22
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=329
+						y=224
+						width=90
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="# Capture"
+					align="horiz. right"
+				}
+				"text entry" {
+					object {
+						x=428
+						y=223
+						width=60
+						height=22
+					}
+					control {
+						chan="$(P)$(R)NumCapture"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=588
+						y=225
+						width=80
+						height=18
+					}
+					monitor {
+						chan="$(P)$(R)NumCaptured_RBV"
+						clr=54
+						bclr=4
+					}
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=493
+						y=225
+						width=80
+						height=18
+					}
+					monitor {
+						chan="$(P)$(R)NumCapture_RBV"
+						clr=54
+						bclr=4
+					}
+					limits {
+					}
+				}
+			}
+		}
+		"text update" {
+			object {
+				x=166
+				y=176
+				width=100
+				height=20
+			}
+			monitor {
+				chan="$(P)$(R)WriteFile_RBV"
+				clr=63
+				bclr=4
+			}
+			clrmod="alarm"
+			format="string"
+			limits {
+			}
+		}
+		"message button" {
+			object {
+				x=166
+				y=220
+				width=59
+				height=20
+			}
+			control {
+				chan="$(P)$(R)Capture"
+				clr=14
+				bclr=51
+			}
+			label="Start"
+			press_msg="1"
+		}
+		text {
+			object {
+				x=86
+				y=220
+				width=70
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Capture"
+			align="horiz. right"
+		}
+		"message button" {
+			object {
+				x=233
+				y=220
+				width=59
+				height=20
+			}
+			control {
+				chan="$(P)$(R)Capture"
+				clr=14
+				bclr=51
+			}
+			label="Stop"
+			press_msg="0"
+		}
+		"text update" {
+			object {
+				x=166
+				y=198
+				width=100
+				height=20
+			}
+			monitor {
+				chan="$(P)$(R)Capture_RBV"
+				clr=63
+				bclr=4
+			}
+			clrmod="alarm"
+			format="string"
+			limits {
+			}
+		}
+		composite {
+			object {
+				x=16
+				y=247
+				width=654
+				height=45
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=16
+						y=247
+						width=140
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Write status"
+					align="horiz. right"
+				}
+				"text update" {
+					object {
+						x=165
+						y=247
+						width=120
+						height=20
+					}
+					monitor {
+						chan="$(P)$(R)WriteStatus"
+						clr=63
+						bclr=4
+					}
+					clrmod="alarm"
+					format="string"
+					limits {
+					}
+				}
+				text {
+					object {
+						x=16
+						y=272
+						width=140
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Write message"
+					align="horiz. right"
+				}
+				"text update" {
+					object {
+						x=165
+						y=275
+						width=505
+						height=14
+					}
+					monitor {
+						chan="$(P)$(R)WriteMessage"
+						clr=20
+						bclr=2
+					}
+					format="string"
+					limits {
+					}
+				}
+			}
+		}
+	}
+}
+text {
+	object {
+		x=67
+		y=33
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="File path"
+	align="horiz. right"
+}
+text {
+	object {
+		x=67
+		y=81
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="File name base"
+	align="horiz. right"
+}
+"related display" {
+	object {
+		x=488
+		y=303
+		width=163
+		height=26
+	}
+	display[0] {
+		label="Full NDFileBase"
+		name="NDFileBase.adl"
+		args="P=$(P),R=$(R)"
+	}
+	display[1] {
+		label="MPI Config"
+		name="NDPipeWriterMPI.adl"
+		args="P=$(P),R=$(R)"
+	}
+	clr=14
+	bclr=5
+}
