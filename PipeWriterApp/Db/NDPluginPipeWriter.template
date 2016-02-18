@@ -238,6 +238,14 @@ record(mbbi, "$(P)$(R)CalcOutputType_RBV")
     field(SCAN, "I/O Intr")
 }
 
+record(longin, "$(P)$(R)CalcImageNumPix")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_CalcImageNumPix")
+    field(SCAN, "I/O Intr")
+}
+
+
 record(mbbo, "$(P)$(R)OutputFileType")
 {
     field(PINI, "YES")
@@ -361,14 +369,6 @@ record(bo, "$(P)$(R)OutputIncFileNum")
     info(autosaveFields, "VAL")
 }
 
-record(bi, "$(P)$(R)RunState")
-{
-    field(DTYP, "asynInt32")
-    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_RunState")
-    field(ZNAM, "No")
-    field(ONAM, "Yes")
-    field(SCAN, "I/O Intr")
-}
 
 record(bo, "$(P)$(R)ProcessStart")
 {
@@ -395,17 +395,10 @@ record(bo, "$(P)$(R)ProcessStop")
 record(bi, "$(P)$(R)ProcessStatus")
 {
     field(DTYP, "asynInt32")
-    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_ProcessStatus")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PW_RunState")
     field(ZNAM, "No")
     field(ONAM, "Yes")
     field(SCAN, "I/O Intr")
 }
 
-record(stringout, "$(P)$(R)TempSuffix")
-{
-    field(PINI, "YES")
-    field(DTYP, "asynOctetWrite")
-    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FILE_TEMP_SUFFIX")
-    field(VAL,  "")
-}
 
