@@ -1,4 +1,10 @@
 
+/**
+ Copyright (c) 2015, UChicago Argonne, LLC
+ See LICENSE file.
+*/
+/* NDPluginPipeWriter.cpp */
+
 #include <cstdio>
 //#include <string>
 #include <cstring>

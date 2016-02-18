@@ -1,3 +1,8 @@
+/**
+ Copyright (c) 2015, UChicago Argonne, LLC
+ See LICENSE file.
+*/
+/* PICam.cpp */
 #ifndef NDPluginPipeWriter_H
 #define NDPluginPipeWriter_H
 #include <string>
