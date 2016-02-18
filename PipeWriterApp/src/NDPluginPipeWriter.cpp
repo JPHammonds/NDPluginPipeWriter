@@ -372,6 +372,12 @@ void NDPluginPipeWriter::watchMPICommandOutputTask() {
         epicsThreadSleep(0.005);
 
         fgets(outChars, 255, cmdInPipe);
+        //remove any newlines
+        int len = strlen(outChars);
+        if (outChars[len-1] == '\n'){
+            outChars[len-1] = '\0';
+        }
+
         argToken = strtok(outChars, " ");
         while (argToken != NULL) {
             args.push_back(argToken);
@@ -703,6 +709,8 @@ NDPluginPipeWriter::NDPluginPipeWriter(const char *portName, int queueSize,
             asynParamInt32, &PipeWriter_ResetQueues);
     createParam(PipeWriter_CalcOutTypeString,
             asynParamInt32, &PipeWriter_CalcOutType);
+    createParam(PipeWriter_CalcImageNumPixString,
+            asynParamInt32, &PipeWriter_CalcImageNumPix);
     createParam(PipeWriter_OutputFileTypeString,
             asynParamInt32, &PipeWriter_OutputFileType);
     createParam(PipeWriter_OutputFilePathString,
@@ -733,8 +741,8 @@ NDPluginPipeWriter::NDPluginPipeWriter(const char *portName, int queueSize,
             asynParamInt32, &PipeWriter_OutputCaptureStop);
     createParam(PipeWriter_OutputCaptureStatusString,
             asynParamInt32, &PipeWriter_OutputCaptureStatus);
-    createParam(PipeWriter_RunStateString,
-            asynParamInt32, &PipeWriter_RunState);
+//    createParam(PipeWriter_RunStateString,
+//            asynParamInt32, &PipeWriter_RunState);
     createParam(PipeWriter_ProcessStartString,
             asynParamInt32, &PipeWriter_ProcessStart);
     createParam(PipeWriter_ProcessStopString,
@@ -750,6 +758,7 @@ NDPluginPipeWriter::NDPluginPipeWriter(const char *portName, int queueSize,
     setStringParam(PipeWriter_OutputFilePath, "");
     setStringParam(PipeWriter_OutputFileName, "");
     setStringParam(PipeWriter_OutputFullFileName, "");
+    setIntegerParam(PipeWriter_ProcessStatus, 1);
 
     lastFrameNumber = -1;
     this->supportsMultipleArrays = 1;
