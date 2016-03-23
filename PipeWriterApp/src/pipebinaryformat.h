@@ -6,6 +6,8 @@
  *
  *  March, 2015
  *
+ *  This file was copied from the detectorMPI program's directories
+ *  in order to simplify this plugin.
  *
  *********************************************************************************/
 
