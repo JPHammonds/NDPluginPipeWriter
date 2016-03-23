@@ -57,6 +57,7 @@ static void exitCallbackC(void *pPvt) {
     NDPluginPipeWriter *pPipeWriter = (NDPluginPipeWriter*) pPvt;
     delete pPipeWriter;
 }
+
 /**
  * Callback when a new Image event is seen.  Call the driver's method
  * piHanfleNewImageTask
@@ -156,7 +157,9 @@ asynStatus NDPluginPipeWriter::checkOutputPath()
 }
 
 
-
+/**
+ *
+ */
 asynStatus NDPluginPipeWriter::openFile(const char *fileName, NDFileOpenMode_t openMode, NDArray *pArray)
 {
    int status = asynSuccess;
@@ -187,6 +190,9 @@ asynStatus NDPluginPipeWriter::openFile(const char *fileName, NDFileOpenMode_t o
 }
 
 
+/**
+ *
+ */
 asynStatus NDPluginPipeWriter::writeFile(NDArray *pArray)
 {
     int status = asynSuccess;
@@ -261,6 +267,9 @@ asynStatus NDPluginPipeWriter::closeFile()
     return (asynStatus)status;
 }
 
+/**
+ *
+ */
 bool NDPluginPipeWriter::closeCommandInputPipe() {
     char inPipeName[256];
     getStringParam(PipeWriter_CommandPipeIn, 256, inPipeName);
@@ -283,6 +292,9 @@ bool NDPluginPipeWriter::closeCommandInputPipe() {
     return rval;
 }
 
+/**
+ *
+ */
 bool NDPluginPipeWriter::closeCommandOutputPipe() {
     char outPipeName[256];
     getStringParam(PipeWriter_CommandPipeOut, 256, outPipeName);
@@ -305,6 +317,9 @@ bool NDPluginPipeWriter::closeCommandOutputPipe() {
     return rval;
 }
 
+/**
+ *
+ */
 bool NDPluginPipeWriter::openCommandInputPipe() {
     char inPipeName[256];
     getStringParam(PipeWriter_CommandPipeIn, 256, inPipeName);
@@ -329,6 +344,9 @@ bool NDPluginPipeWriter::openCommandInputPipe() {
     return cmdInPipeOpen;
 }
 
+/**
+ *
+ */
 bool NDPluginPipeWriter::openCommandOutputPipe() {
     char outPipeName[256];
     getStringParam(PipeWriter_CommandPipeOut, 256, outPipeName);
@@ -413,6 +431,31 @@ void NDPluginPipeWriter::watchMPICommandOutputTask() {
                         status = findParam(paramName.c_str(), &paramRef);
                         if (status == asynSuccess) {
                             int tempVal;
+                            if (paramRef == PipeWriter_OutputFileType){
+                                switch (iVal){
+                                case 4:
+                                    iVal = NULL_OUTPUT;
+                                    break;
+                                case 2:
+                                    iVal = TIFF_FILE;
+                                    break;
+                                case 5:
+                                    iVal = IMM_FILE;
+                                    break;
+                                case 3:
+                                    iVal = LINUX_PIPE_OUT;
+                                    break;
+                                default:
+                                    iVal = NULL_OUTPUT;
+                                    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                                            "%s:%s Error in OutputFileType\n",
+                                            pluginName, __FUNCTION__);
+                                    break;
+                                }
+                            }
+                            else if (paramRef == PipeWriter_DataSourceType){
+
+                            }
                             getIntegerParam(paramRef, &tempVal);
                             if (tempVal != iVal) {
                                 status = setIntegerParam(paramRef, iVal);
@@ -501,10 +544,6 @@ void NDPluginPipeWriter::watchMPICommandOutputTask() {
                 callParamCallbacks();
             }
         }
-//        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-//                "%s:%s cmdOut %s\n",
-//                pluginName, __FUNCTION__,
-//                outChars);
     }
 }
 
@@ -531,11 +570,14 @@ asynStatus NDPluginPipeWriter::writeInt32(asynUser *pasynUser, epicsInt32 value)
         if (value == 0){
             captureSval << NULL_OUTPUT;
             sendCommand(mpiProgName, windowStr, nullOutputSelectedCmd, 0, emptyStr, emptyStr);
+            setIntegerParam(PipeWriter_OutputFileType, NULL_OUTPUT);
         }
         else {
             captureSval << IMM_FILE;
             sendCommand(mpiProgName, windowStr, immOutputSelectedCmd, 1, boolStr, captureSval.str());
+            setIntegerParam(PipeWriter_OutputFileType, IMM_FILE);
         }
+        callParamCallbacks();
         status = NDPluginFile::writeInt32(pasynUser, value);
     }
     else if (function == NDFileNumCapture) {
