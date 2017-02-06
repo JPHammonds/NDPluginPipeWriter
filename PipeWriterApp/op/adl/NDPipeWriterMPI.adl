@@ -5,8 +5,8 @@ file {
 }
 display {
 	object {
-		x=857
-		y=197
+		x=848
+		y=189
 		width=846
 		height=660
 	}
@@ -855,31 +855,6 @@ text {
 	label="Stop"
 	press_msg="1"
 	release_msg="0"
-}
-menu {
-	object {
-		x=718
-		y=620
-		width=70
-		height=20
-	}
-	control {
-		chan="8idi:Unidig2Bo1"
-		clr=14
-		bclr=4
-	}
-}
-text {
-	object {
-		x=650
-		y=583
-		width=172
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Detector Power"
 }
 rectangle {
 	object {
