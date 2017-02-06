@@ -393,7 +393,7 @@ void NDPluginPipeWriter::watchMPICommandOutputTask() {
 
     while (1 && keepGoing) {
         vector<string> args;
-        epicsThreadSleep(0.005);
+        epicsThreadSleep(0.001);
 
         fgets(outChars, 255, cmdInPipe);
         //remove any newlines
