@@ -844,10 +844,12 @@ extern "C" int NDPipeWriterConfigure(const char *portName, int queueSize,
                                     int maxBuffers, size_t maxMemory,
                                     int priority, int stackSize)
 {
-  new NDPluginPipeWriter(portName, queueSize, blockingCallbacks, NDArrayPort,
+  NDPluginPipeWriter *pPlugin = new NDPluginPipeWriter(portName, queueSize, blockingCallbacks, NDArrayPort,
             cmdPipeInName, cmdPipeOutName, NDArrayAddr,
               maxBuffers, maxMemory, priority, stackSize);
-  return(asynSuccess);
+//  return(asynSuccess);
+  return pPlugin->start();
+
 }
 
 /* EPICS iocsh shell commands */
